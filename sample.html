@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ウズカレStep - もう、SESで終わらない。</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* --- Reset & Base Styles --- */
+        :root {
+            --main-color: #1E293B; /* ダークブルー（技術的、信頼感） */
+            --secondary-color: #334155; /* ミディアムスレート（補完色） */
+            --accent-color: #06B6D4; /* シアン（アクセント、先進性） */
+            --accent-color-hover: #0891B2; /* シアンダーク（ホバー時） */
+            --highlight-color: #F97316; /* オレンジ（重要ポイント強調） */
+            --text-color: #0F172A; /* 濃いネイビー（本文） */
+            --text-light: #64748B; /* グレイ（補足） */
+            --text-white: #F8FAFC; /* オフホワイト */
+            --bg-dark: #0F172A; /* 濃いネイビー */
+            --bg-light: #F1F5F9; /* 薄いグレー */
+            --bg-white: #FFFFFF; /* 白 */
+            --bg-gradient: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+            --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #0EA5E9 100%);
+            --border-color: #CBD5E1; /* 境界線 */
+            --shadow-light: 0 4px 12px rgba(15, 23, 42, 0.08);
+            --shadow-medium: 0 6px 18px rgba(15, 23, 42, 0.12);
+            --shadow-strong: 0 8px 30px rgba(15, 23, 42, 0.15);
+            --success-color: #10B981; /* 緑（成功） */
+            --code-font: 'Fira Code', 'Source Code Pro', Consolas, monospace;
+            --body-font: 'Inter', 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--body-font);
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+        img, svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 0.8em;
+        }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+        p {
+            margin-bottom: 1.2em;
+            font-size: 1.05rem;
+            letter-spacing: 0.02em;
+            color: var(--text-light); /* Default p color */
+        }
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            color: var(--accent-color-hover);
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--gradient-accent);
+            color: var(--text-white);
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color-hover); /* Solid color for hover effect */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            color: var(--text-white);
+        }
+        .btn:hover::before {
+            opacity: 1;
+        }
+        .btn-large {
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            letter-spacing: 0.03em;
+        }
+        .btn-highlight { /* For special CTAs */
+            background: linear-gradient(135deg, var(--highlight-color) 0%, #EA580C 100%); /* Orange gradient */
+        }
+        .btn-highlight::before {
+            background: #D97706; /* Darker orange for hover */
+        }
+        .btn-highlight:hover {
+             box-shadow: 0 8px 30px rgba(249, 115, 22, 0.4);
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: rgba(15, 23, 42, 0.05);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent-color);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        /* --- Section Base --- */
+        .section {
+            padding: 80px 0; 
+            position: relative;
+            overflow: hidden;
+        }
+        .section-bg-dark {
+            background: var(--bg-gradient);
+            color: var(--text-white);
+        }
+        .section-bg-dark p { 
+            color: var(--text-white);
+            opacity: 0.85;
+        }
+        .section-bg-light {
+            background-color: var(--bg-light);
+        }
+        .section-bg-white {
+            background-color: var(--bg-white);
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 15px;
+            color: var(--main-color); 
+        }
+        .section-bg-dark .section-title {
+            color: var(--text-white);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+        .section-bg-dark .section-title::after {
+            background-color: var(--accent-color); 
+        }
+        .text-center { text-align: center; }
+        .mb-sm { margin-bottom: 10px !important; }
+        .mb-md { margin-bottom: 20px !important; }
+        .mb-lg { margin-bottom: 40px !important; }
+        .highlight {
+            color: var(--highlight-color);
+            font-weight: 700;
+        }
+        .text-accent {
+            color: var(--accent-color);
+        }
+        .section-bg-dark .text-accent {
+            color: #38BDF8; /* 明るいシアン */
+        }
+        .decorative-bg {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .decorative-code { 
+            position: absolute;
+            right: -120px; 
+            top: 50px;
+            font-family: var(--code-font);
+            font-size: 0.85rem; 
+            line-height: 1.5;
+            color: var(--text-light); 
+            opacity: 0.15; 
+            z-index: 0;
+            width: 300px;
+            transform: rotate(8deg);
+            pointer-events: none;
+            white-space: pre; 
+        }
+        /* --- Network Graph Animation --- */
+        .network-graph { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.06; 
+            overflow: hidden;
+        }
+        #networkCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Hero Style (White Background Version) --- */
+        .hero {
+            background: var(--bg-white); 
+            color: var(--main-color); 
+            padding: 80px 0 100px; 
+            position: relative;
+            overflow: hidden;
+            min-height: auto;
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .hero::before { 
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231E293B' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='13' cy='13' r='2'/%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        .hero .hero-inner-container {
+            display: flex;
+            flex-wrap: wrap; 
+            align-items: center;
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .hero .hero-left-column {
+            flex: 1.2;
+            text-align: left;
+            padding-right: 20px;
+            min-width: 300px; 
+        }
+        .hero .hero-service-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color); 
+            margin-bottom: 1em;
+            display: flex;
+            align-items: center;
+            opacity: 1; 
+        }
+        .hero .hero-service-name::before {
+            content: '';
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-color);
+            margin-right: 15px;
+            opacity: 1; 
+        }
+        .hero h1.main-catch {
+            font-size: clamp(2.5rem, 5vw, 3.5rem); 
+            line-height: 1.2;
+            margin-bottom: 0.5em;
+            font-weight: 800;
+            color: var(--text-color); 
+        }
+        .hero p.sub-catch {
+            font-size: clamp(1.2rem, 3vw, 1.8rem); 
+            margin-bottom: 1.3em;
+            opacity: 1; 
+            font-weight: 500;
+            color: var(--text-light); 
+        }
+        .hero .authority-container { /* New container for authority items */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px; /* Space between items */
+            margin-bottom: 1.8em; /* Space below the container */
+        }
+        .hero .authority-item {
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            background-color: rgba(6, 182, 212, 0.1); /* Light cyan background */
+            color: var(--accent-color-hover); /* Darker cyan text */
+            padding: 8px 18px; /* Adjusted padding */
+            border-radius: 25px; /* More pill-like */
+            font-size: 0.9rem; /* Slightly smaller font */
+            font-weight: 600; /* Bolder text */
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15); /* Subtle shadow */
+            transition: all 0.3s ease;
+        }
+        .hero .authority-item:hover {
+            background-color: rgba(6, 182, 212, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+        }
+        .hero .authority-item .icon { /* For a potential SVG icon */
+            margin-right: 8px;
+            font-size: 1.1em; /* Adjust icon size if using font icon */
+        }
+
+        .hero .supplement {
+            font-size: 1.2rem; 
+            margin-bottom: 2.2em;
+            opacity: 1;  
+            line-height: 1.7; 
+            font-weight: 500; 
+            color: var(--secondary-color); 
+        }
+        .hero .supplement .keyword {
+            font-weight: 600;
+            color: var(--accent-color); 
+        }
+        .hero .supplement .keyword::before { 
+            content: "•";
+            color: var(--accent-color);
+            margin-right: 0.4em;
+            font-size: 1.1em; 
+        }
+        .hero .supplement .keyword:first-child::before {
+            content: none; 
+        }
+
+
+        .hero .btn-large { 
+            padding: 16px 35px;
+            font-size: 1.25rem;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.3);
+        }
+        .hero .hero-right-column {
+            flex: 0.8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-width: 280px; 
+        }
+        .hero .hero-image-wrapper {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium); 
+            position: relative;
+            z-index: 1;
+            transform: perspective(1000px) rotateY(-3deg) rotateX(2deg); 
+            transition: all 0.5s ease;
+        }
+         .hero .hero-image-wrapper::before { 
+            display: none;
+        }
+        .hero .hero-image-wrapper:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(-8px); 
+            box-shadow: var(--shadow-strong); 
+        }
+        .hero .hero-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+        .hero .bracket-decoration {
+            font-family: var(--code-font);
+            font-size: 1.8rem;
+            position: relative;
+            color: var(--accent-color); 
+            display: inline-block;
+            margin-right: 0.2em;
+            opacity: 1; 
+        }
+        .tech-pattern { 
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2306B6D4' fill-opacity='0.05'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 1;
+            opacity: 0.3; 
+        }
+
+        /* --- Flow Section --- */
+        .flow {
+            background-color: var(--bg-white);
+            position: relative;
+        }
+        .flow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231E293B' fill-opacity='0.02' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='13' cy='13' r='2'/%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        .flow-steps-container {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: space-around; 
+            align-items: stretch;
+            gap: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        .flow-step {
+            flex: 1 1 220px; 
+            max-width: 280px; 
+            text-align: center;
+            padding: 35px 20px;
+            position: relative;
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        .flow-step .step-number-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+        }
+        .flow-step .step-number-icon.success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+        .flow-step h3 {
+            font-size: 1.3rem;
+            color: var(--main-color);
+            margin-bottom: 15px;
+        }
+        .flow-step p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        @media (min-width: 1100px) { 
+             .flow-step:not(:last-child)::after { 
+                content: '';
+                position: absolute;
+                top: 90px; 
+                right: -27px; 
+                width: 30px; 
+                height: 2px;
+                background-color: var(--accent-color);
+                opacity: 0.5;
+                z-index: -1;
+            }
+            .flow-step:not(:last-child)::before { 
+                content: '>';
+                position: absolute;
+                top: 81px; 
+                right: -24px; 
+                color: var(--accent-color);
+                font-size: 1.2rem;
+                font-weight: bold;
+                z-index: 0;
+            }
+        }
+
+
+        /* --- Sympathy Section (悩み訴求) --- */
+        .sympathy {
+            background-color: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+        }
+        .sympathy::after { 
+            content: '';
+            position: absolute;
+            right: -300px; 
+            bottom: -300px; 
+            width: 600px; 
+            height: 600px; 
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.04) 0%, rgba(6, 182, 212, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .sympathy .section-title { 
+            font-size: clamp(1.8rem, 4vw, 2.5rem); 
+            color: var(--main-color);
+            margin-bottom: 50px;
+        }
+        .sympathy .section-title::after{
+            background-color: var(--accent-color);
+        }
+        .sympathy-lead { 
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sympathy-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px;
+            align-items: start;
+            position: relative;
+            z-index: 1;
+        }
+        .sympathy-card {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+        .sympathy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        .sympathy-card::before { 
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: 12px 12px 0 0;
+        }
+        .sympathy-bubble {
+            background-color: var(--bg-light); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            font-size: 1rem; 
+            color: var(--text-color);
+            line-height: 1.6;
+            font-family: var(--body-font);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.04); 
+        }
+        .sympathy-bubble p { 
+            color: var(--text-color);
+            margin-bottom: 0; 
+        }
+        .sympathy-bubble::after { 
+            content: '';
+            position: absolute;
+            bottom: -10px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid var(--bg-light); 
+        }
+        .sympathy-illustration {
+            width: 80px; 
+            height: 80px; 
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(6, 182, 212, 0.05); 
+            border-radius: 50%;
+            padding: 15px; 
+        }
+        .sympathy-illustration svg {
+             fill: var(--accent-color); 
+             width: 100%;
+             height: 100%;
+        }
+        .sympathy-callout { 
+            text-align: center;
+            margin-top: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 25px;
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1;
+            color: var(--main-color);
+        }
+        .sympathy-callout .check-icon {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.5rem;
+            vertical-align: middle;
+        }
+
+
+        /* --- Features --- */
+        .features {
+            background-color: var(--bg-white);
+            position: relative;
+            overflow: hidden;
+        }
+        .features::before { 
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231E293B' fill-opacity='0.02' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='13' cy='13' r='2'/%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        .feature-card {
+            background: var(--bg-white);
+            padding: 35px 25px; 
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before { 
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-accent);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        .feature-card .icon {
+            font-size: 2.8rem; 
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            display: inline-flex; 
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(6, 182, 212, 0.08); 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%;
+            text-align: center;
+        }
+        .feature-card h3 {
+            font-size: 1.35rem; 
+            color: var(--main-color);
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            font-size: 0.95rem; 
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        /* --- Instructor Profile Section --- */
+        .instructor-profile {
+            background-color: var(--bg-section-even); 
+        }
+        .instructor-profile .section-title {
+            margin-bottom: 60px;
+        }
+        .instructor-content-wrapper {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 40px;
+            align-items: flex-start; 
+        }
+        .instructor-image-column {
+            flex: 1 1 280px; 
+            max-width: 300px; 
+            text-align: center; 
+        }
+        .instructor-image-column img {
+            border-radius: 50%; 
+            box-shadow: var(--shadow-strong);
+            border: 5px solid var(--bg-white); 
+            width: 200px; 
+            height: 200px;
+            object-fit: cover;
+            margin: 0 auto; 
+        }
+        .instructor-name {
+            font-size: 1.8rem;
+            color: var(--main-color);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .instructor-details-column {
+            flex: 2 1 400px; 
+        }
+        .instructor-details-column h4 { 
+            font-size: 1.4rem;
+            color: var(--main-color);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid var(--accent-color);
+            display: inline-block; 
+        }
+        .instructor-details-column p {
+            font-size: 1.05rem;
+            line-height: 1.8; 
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+        .instructor-book-info {
+            margin-top: 30px;
+            background-color: var(--bg-white);
+            padding: 25px;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap; 
+            align-items: center;
+            gap: 25px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+        .instructor-book-info img {
+            max-width: 120px; 
+            border-radius: 4px;
+            box-shadow: var(--shadow-light);
+            flex-shrink: 0; 
+        }
+        .instructor-book-info .book-details {
+            flex-grow: 1; 
+        }
+        .instructor-book-info .book-details p {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        .instructor-book-info .book-details strong {
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+
+        /* Pricing Section */
+        .pricing {
+            background-color: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+        }
+         .pricing::before { 
+            content: '';
+            position: absolute;
+            left: -200px; 
+            top: -200px; 
+            width: 400px; 
+            height: 400px; 
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.04) 0%, rgba(6, 182, 212, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .pricing-card-wrapper {
+            max-width: 600px; 
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card {
+            background-color: var(--bg-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-medium);
+            padding: 40px 35px; 
+            text-align: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+         .pricing-card::before { 
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--gradient-accent);
+        }
+        .pricing-card h3.plan-title {
+            font-size: 1.1rem; 
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1.5px; 
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        .pricing-card h3.plan-title::after { 
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+        .pricing-card .price-display {
+            font-size: clamp(3.5rem, 10vw, 4.5rem); 
+            font-weight: 800;
+            color: var(--main-color);
+            margin-bottom: 0px; 
+            line-height: 1;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .pricing-card .price-display .currency {
+            font-size: 1.8rem; 
+            font-weight: 600;
+            margin-left: 5px;
+            vertical-align: super; 
+            line-height: 1;
+            opacity: 0.8;
+        }
+         .pricing-card .price-period { 
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        .included-services {
+            margin-top: 35px;
+            text-align: left; 
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+        }
+        .included-services h4 { 
+            font-size: 1.3rem;
+            color: var(--main-color);
+            margin-bottom: 25px;
+            text-align: center; 
+        }
+        .included-services ul {
+            list-style-type: none; /* Remove default list marker */
+            padding-left: 0;      /* Remove default padding */
+            max-width: 380px; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .included-services li {
+            margin-bottom: 15px; 
+            padding-left: 30px; /* Space for custom checkmark */
+            position: relative;
+            font-size: 1rem; 
+            color: var(--text-color);
+        }
+        .included-services li::before { 
+            content: '✓'; 
+            position: absolute;
+            left: 0;
+            top: 1px; 
+            color: var(--success-color);
+            font-size: 1.4rem; 
+            font-weight: bold;
+        }
+        .included-services .service-item-title { 
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+            margin-bottom: 3px;
+        }
+        .included-services .service-item-description { 
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        .pricing-card .pricing-btn { 
+            width: 100%;
+            max-width: 300px;
+            margin-top: 30px; 
+        }
+
+
+        /* --- Mid CTA --- */
+        .mid-cta {
+            background-color: var(--main-color); 
+            color: #fff; 
+            padding: 60px 0;
+            text-align: center;
+        }
+        .mid-cta .section-title { 
+            color: #fff; 
+        }
+        .mid-cta .section-title::after { 
+            background-color: var(--accent-color); 
+        }
+        .mid-cta p { 
+            color: #f0f0f0; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+
+        /* --- Benefits --- */
+        .benefits {
+            background-color: var(--bg-white);
+        }
+        .benefits-list {
+            list-style: none;
+            padding-left: 0;
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        .benefits-list li {
+            font-size: 1.1rem;
+            padding: 15px 0 15px 40px; 
+            position: relative;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--border-color); 
+        }
+        .benefits-list li:last-child {
+            border-bottom: none;
+        }
+        .benefits-list li::before { 
+            content: '✓'; 
+            position: absolute;
+            left: 0;
+            top: 15px; 
+            color: var(--highlight-color); 
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .benefits-list li strong {
+            color: var(--main-color);
+            font-weight: 600; 
+        }
+        .benefit-image-container { 
+            /* text-align: center;  */
+        }
+
+
+        /* --- Testimonials Section --- */
+        .testimonials {
+            background-color: var(--bg-light);
+        }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .testimonial-card {
+            background-color: var(--bg-white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+        .testimonial-text {
+            font-size: 1.05rem;
+            color: var(--text-color);
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .testimonial-text::before,
+        .testimonial-text::after {
+            content: '"';
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 0;
+        }
+        .testimonial-author {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--main-color);
+            margin-bottom: 5px;
+        }
+        .testimonial-rating {
+            color: #FBBF24; /* Amber color for stars */
+            font-size: 1.1rem;
+        }
+
+        /* --- FAQ Section --- */
+        .faq {
+            background-color: var(--bg-white);
+        }
+        .faq-accordion {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            background-color: var(--bg-white);
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            overflow: hidden; 
+        }
+        .faq-question {
+            width: 100%;
+            padding: 20px 25px;
+            background-color: transparent; 
+            border: none;
+            text-align: left;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--main-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .faq-question:hover {
+            background-color: rgba(6, 182, 212, 0.05);
+        }
+        .faq-icon {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            padding: 0 25px; 
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            background-color: var(--bg-white); 
+        }
+        .faq-answer p {
+            font-size: 1rem;
+            color: var(--text-light);
+            padding: 20px 0; 
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px; 
+        }
+
+        /* --- Call to Action (CTA) Section --- */
+        .cta {
+            padding: 80px 0;
+        }
+        .cta .section-title {
+            color: var(--text-white); 
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+        }
+        .cta .section-title::after {
+            background-color: var(--highlight-color); 
+        }
+        .cta-text {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+            color: #E2E8F0; 
+        }
+
+        /* --- Footer Section --- */
+        .footer {
+            padding: 60px 0 30px; 
+            color: var(--text-light); 
+        }
+        .footer p { 
+             margin-bottom: 0.5em;
+             color: #94A3B8; 
+        }
+        .footer a {
+            color: #CBD5E1; 
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: var(--accent-color);
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        .footer-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-nav a {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .footer-bottom p {
+            color: #94A3B8;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 991px) {
+            .hero .hero-inner-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero .hero-left-column {
+                padding-right: 0;
+                text-align: center; 
+            }
+            .hero .hero-service-name {
+                justify-content: center; 
+            }
+             .hero .hero-service-name::before {
+                margin-right: 10px; 
+            }
+            .hero .hero-right-column {
+                margin-top: 30px;
+            }
+            .flow-steps-container {
+                flex-direction: column;
+                align-items: center; 
+            }
+            .flow-step {
+                width: 100%; 
+                max-width: 400px; 
+                margin-bottom: 20px;
+            }
+            .flow-step:not(:last-child)::after,
+            .flow-step:not(:last-child)::before {
+                display: none; 
+            }
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .footer-nav {
+                justify-content: center;
+            }
+            .instructor-content-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .instructor-image-column {
+                max-width: 220px; 
+                margin-bottom: 20px;
+            }
+            .instructor-details-column {
+                text-align: center; 
+            }
+            .instructor-details-column h4 {
+                display: block; 
+                border-bottom: none; 
+            }
+            .instructor-details-column h4::after { 
+                content: '';
+                display: block;
+                width: 50px;
+                height: 2px;
+                background: var(--accent-color);
+                margin: 8px auto 0;
+            }
+            .instructor-book-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            .section { padding: 60px 0; }
+            .hero { padding: 60px 0 80px; }
+            .hero h1.main-catch { font-size: 2.5rem; }
+            .hero p.sub-catch { font-size: 1.3rem; }
+            .hero .supplement { font-size: 1rem; }
+            .btn-large { padding: 15px 30px; font-size: 1.1rem; }
+
+            .sympathy-cards-container {
+                grid-template-columns: 1fr; 
+            }
+            .features-grid {
+                 grid-template-columns: 1fr; 
+            }
+            .testimonials-grid {
+                 grid-template-columns: 1fr; 
+            }
+            .faq-question { font-size: 1.05rem; padding: 15px 20px;}
+            .faq-answer p { font-size: 0.95rem; }
+        }
+        .sp-only { display: none; }
+        @media (max-width: 768px) {
+            .sp-only { display: block; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="network-graph">
+            <canvas id="networkCanvas"></canvas>
+        </div>
+        <div class="decorative-code" aria-hidden="true">
+// UZUKARE.Step(engineer);
+function elevateCareer(dev) {
+  if (dev.isSES &amp;&amp; dev.wantsGrowth) {
+    dev.skills.push("CCNP");
+    dev.skills.push("Advanced Networking");
+    dev.opportunities = "Better Companies";
+    return dev.profile.update();
+  }
+}
+elevateCareer(current_user);
+        </div>
+        <div class="hero-inner-container container">
+            <div class="hero-left-column">
+                <p class="hero-service-name animate-on-scroll">ウズカレStep</p>
+                <h1 class="main-catch animate-on-scroll"><span class="bracket-decoration">{</span>もう、SESで<br class="sp-only">終わらない。<span class="bracket-decoration">}</span></h1>
+                <p class="sub-catch animate-on-scroll">CCNP取得でキャリアに突破口を。</p>
+                <div class="authority-container animate-on-scroll">
+                    <span class="authority-item"><span class="icon">✓</span>ITエンジニア専門</span>
+                    <span class="authority-item"><span class="icon">✓</span>徹底した個別サポート</span>
+                    <span class="authority-item"><span class="icon">✓</span>支援実績10万人超</span>
+                </div>
+                <p class="supplement animate-on-scroll">
+                    <span class="keyword">完全オンライン</span>
+                    <span class="keyword">マンツーマン</span>
+                    <span class="keyword">転職支援つき</span>
+                </p>
+                <a href="#cta" class="btn btn-large animate-on-scroll">無料でキャリア相談してみる</a>
+            </div>
+            <div class="hero-right-column">
+                <div class="hero-image-wrapper animate-on-scroll">
+                    <img src="https://placehold.co/450x550/1E293B/94A3B8?text=UZUKARE+STEP" alt="ウズカレStep イメージ" onerror="this.onerror=null;this.src='https://placehold.co/450x550/1E293B/94A3B8?text=Image+Error';">
+                </div>
+            </div>
+        </div>
+        <div class="tech-pattern"></div>
+    </header>
+
+    <main>
+        <section id="sympathy" class="section sympathy">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">こんな<span class="highlight">悩み</span>、<br class="sp-only">抱えていませんか？</h2>
+                <p class="sympathy-lead animate-on-scroll">「今の環境から抜け出したいけど、どうすればいいかわからない…」<br>そんなあなたのためのサービスです。</p>
+                <div class="sympathy-cards-container">
+                    <div class="sympathy-card animate-on-scroll">
+                        <div class="sympathy-bubble">
+                            <p>日々のルーティンワーク。スキルアップしている実感がなく、将来が漠然と不安だ…</p>
+                        </div>
+                        <div class="sympathy-illustration">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="sympathy-card animate-on-scroll">
+                        <div class="sympathy-bubble">
+                            <p>もっと上流工程や自社サービス開発に挑戦したい！</p>
+                        </div>
+                        <div class="sympathy-illustration">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5c2.49 0 4.5 2.01 4.5 4.5s-2.01 4.5-4.5 4.5S7.5 13.49 7.5 11s2.01-4.5 4.5-4.5M12 5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 13.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6-7.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                        </div>
+                    </div>
+                     <div class="sympathy-card animate-on-scroll">
+                        <div class="sympathy-bubble">
+                            <p>転職したいけど、自分のスキルに自信がないし、アピール方法もわからない…</p>
+                        </div>
+                        <div class="sympathy-illustration">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.99 4c0-1.1-.89-2-1.99-2H6c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h12.01c1.1 0 1.99-.9 1.99-2l-.01-12zm-4.01 10H8V8h7.98v6zM6 18H4V4.02C4 3.46 4.46 3 5.02 3h13.96c.56 0 1.02.46 1.02 1.02V18H6z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="sympathy-callout animate-on-scroll">
+                    <span class="check-icon">✓</span> その悩み、ウズカレStepが<span class="text-accent">解決の糸口</span>を見つけます！
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section features">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">ウズカレStepの<span class="highlight">3つの強み</span></h2>
+                <div class="features-grid">
+                    <div class="feature-card animate-on-scroll">
+                        <div class="icon">💡</div>
+                        <h3>CCNP対策 × 実践力</h3>
+                        <p>資格取得はもちろん、現場で即通用する構築スキルをマンツーマン指導で徹底的に鍛えます。</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="icon">💻</div>
+                        <h3>完全オンライン完結</h3>
+                        <p>時間や場所を選ばず、あなたのライフスタイルに合わせて無理なく学習を進められます。</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="icon">🤝</div>
+                        <h3>市場価値を高める転職支援</h3>
+                        <p>キャリア相談から書類添削、面接対策、求人紹介まで。あなたの市場価値を最大化します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flow" class="section flow">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">ご利用の流れ <span style="font-size: 1.2rem; display: block; margin-top: 5px; color: var(--text-light);">(無料相談〜転職成功まで)</span></h2>
+                <div class="flow-steps-container">
+                    <div class="flow-step animate-on-scroll">
+                        <div class="step-number-icon">1</div>
+                        <h3>無料キャリア相談</h3>
+                        <p>オンラインで現状や目標をヒアリング。最適なプランをご提案。</p>
+                    </div>
+                    <div class="flow-step animate-on-scroll">
+                        <div class="step-number-icon">2</div>
+                        <h3>学習プログラム開始</h3>
+                        <p>CCNP取得に向け、マンツーマンサポートや動画講義で学習。</p>
+                    </div>
+                    <div class="flow-step animate-on-scroll">
+                        <div class="step-number-icon">3</div>
+                        <h3>転職サポート</h3>
+                        <p>求人紹介、書類添削、面接対策など、転職活動をフルサポート。</p>
+                    </div>
+                    <div class="flow-step animate-on-scroll">
+                        <div class="step-number-icon success">🚀</div>
+                        <h3>内定・転職成功！</h3>
+                        <p>理想のキャリアへの第一歩。入社後もフォローします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section instructor-profile section-bg-light" id="instructor">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">経験豊富な<span class="highlight">現役エンジニア講師</span>が<br class="sp-only">あなたの学習を徹底サポート</h2>
+                <div class="instructor-content-wrapper">
+                    <div class="instructor-image-column animate-on-scroll">
+                        <img src="https://placehold.co/250x250/334155/F8FAFC?text=講師" alt="講師：浦川 晃 (仮名)">
+                        <h3 class="instructor-name">浦川 晃 (仮名)</h3>
+                    </div>
+                    <div class="instructor-details-column animate-on-scroll">
+                        <h4>略歴</h4>
+                        <p>ネットワーク構築の現場を多数経験後、インフラエンジニア育成の講師として長年活躍。特にCCNA、CCNPなどの資格対策指導を得意とし、受講生の資格取得率は9割以上、満足度は常に98%を超える高い評価を得ている。「難しいことを易しく、楽しく」をモットーに、複雑なIT技術や専門用語も日常生活の具体例を交えながら解説するスタイルは、業界未経験者やIT初心者からも「分かりやすい」「学習が続けやすい」と圧倒的な支持を集めている。</p>
+                        
+                        <h4>担当科目</h4>
+                        <p>CCNP Enterprise, CCNA, LinuC/LPIC, AWS認定 など</p>
+
+                        <div class="instructor-book-info">
+                            <img src="https://placehold.co/100x140/CBD5E1/0F172A?text=著書" alt="CCNA完全合格テキスト＆問題集">
+                            <div class="book-details">
+                                <p><strong>代表著書 (例):</strong></p>
+                                <p>「[書籍名] CCNA完全合格テキスト＆問題集」</p>
+                                <p>Amazonランキング CCNA/CCNP/CCIE関連書籍部門 第1位獲得実績あり (※)</p>
+                                <p style="font-size:0.8em; margin-top:5px; color: var(--text-light);">※ 過去の実績です。現在のランキングを保証するものではありません。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section mid-cta section-bg-dark">
+            <div class="container text-center">
+                <h2 class="section-title animate-on-scroll">少しでも迷ったら、<br class="sp-only">まずはお気軽にお話ししませんか？</h2>
+                <p class="cta-text animate-on-scroll">キャリアの棚卸しや、漠然とした不安について相談するだけでも大丈夫です。<br>無理な勧誘は一切ありませんので、安心して第一歩を踏み出してください。</p>
+                <a href="#cta" class="btn btn-large animate-on-scroll">無料でキャリア面談に申し込む</a>
+            </div>
+        </section>
+
+        <section class="section benefits section-bg-white" id="benefits">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">ウズカレStepで手に入れる、<span class="highlight">あなたの新しい未来</span></h2>
+                <ul class="benefits-list">
+                    <li class="animate-on-scroll">設計・構築フェーズにも携われる、<strong>やりがいのある企業への転職</strong></li>
+                    <li class="animate-on-scroll">"運用監視だけ"のキャリアから脱却し、<strong>市場価値の高いエンジニアへ</strong></li>
+                    <li class="animate-on-scroll">現場で即戦力として活躍できる、<strong>本物のネットワーク技術と問題解決能力</strong></li>
+                    <li class="animate-on-scroll">将来的には、<strong>NW設計やクラウドインフラといった専門領域への挑戦も</strong></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section testimonials section-bg-light" id="testimonials">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">「ウズカレStepで、未来が変わった！」<span class="highlight">先輩たちの声</span></h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card animate-on-scroll">
+                        <img src="https://placehold.co/80x80/06B6D4/F8FAFC?text=Y.S" alt="受講生 Y.Sさん" class="testimonial-avatar">
+                        <p class="testimonial-text">「運用監視のループから抜け出したい一心で受講しました。3ヶ月でCCNPを取得し、何より模擬プロジェクトでの経験が自信に繋がりました。今では自社サービスのネットワーク構築チームで、日々新しい技術に触れています！」</p>
+                        <p class="testimonial-author">- Y.S さん (26歳／元SES 運用監視 → 自社NW構築エンジニア)</p>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                    <div class="testimonial-card animate-on-scroll">
+                        <img src="https://placehold.co/80x80/334155/F8FAFC?text=M.K" alt="受講生 M.Kさん" class="testimonial-avatar">
+                        <p class="testimonial-text">「面接で何度も"構築未経験"を指摘され、心が折れかけていました。ウズカレStepの徹底した面接対策と、現役エンジニア講師からの実践的なアドバイスのおかげで、ついに第一希望の企業から内定が！本当に感謝しています。」</p>
+                        <p class="testimonial-author">- M.K さん (28歳／中小SIer 保守 → 大手SIer インフラ設計)</p>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section pricing section-bg-light" id="pricing">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">料金プラン</h2>
+                <div class="pricing-card-wrapper">
+                    <div class="pricing-card animate-on-scroll">
+                        <h3 class="plan-title">フルサポートプラン</h3>
+                        <div class="price-display">100,000<span class="currency">円</span></div>
+                        <p class="price-period">(税込)</p>
+                        <ul class="features-list included-services">
+                            <h4>充実のサポート内容</h4>
+                            <li><span class="service-item-title">充実のマンツーマンサポート</span><p class="service-item-description">経験豊富なプロがオンラインで個別指導。あなたの理解度に合わせて進めます。</p></li>
+                            <li><span class="service-item-title">いつでもLINEで質問可能</span><p class="service-item-description">学習中の疑問はLINEで気軽に質問OK。すぐに解決して次に進めます。</p></li>
+                            <li><span class="service-item-title">高品質な動画講義</span><p class="service-item-description">体系的に学べる動画コンテンツが見放題。自分のペースで学習できます。</p></li>
+                            <li><span class="service-item-title">オンライン演習サイト完備</span><p class="service-item-description">実践的なスキルを身につけるためのオンライン演習環境をご用意。</p></li>
+                        </ul>
+                        <a href="#cta" class="btn btn-large pricing-btn btn-highlight">無料相談で詳細を確認する</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section faq section-bg-white" id="faq">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">よくあるご質問</h2>
+                <div class="faq-accordion">
+                    <div class="faq-item animate-on-scroll">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>インフラ運用経験が浅くても大丈夫ですか？</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>はい、大丈夫です。インフラエンジニアとして1～2年程度の運用・監視経験があり、CCNP取得とキャリアアップへの強い意欲をお持ちであれば問題ありません。基礎から丁寧にサポートし、実践的なスキルが身につくよう指導いたします。</p>
+                        </div>
+                    </div>
+                    <div class="faq-item animate-on-scroll">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>学習時間は週にどれくらい必要ですか？</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>目標達成のためには、週に10～15時間程度の学習時間を確保いただくことを推奨しています。もちろん、お忙しい方向けに個別の学習計画についてもご相談いただけますのでご安心ください。</p>
+                        </div>
+                    </div>
+                    <div class="faq-item animate-on-scroll">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>受講料の支払い方法について教えてください。</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>クレジットカード払い（一括・分割）、銀行振込に対応しております。分割でのお支払いも可能ですので、無料キャリア相談の際にお気軽にご相談ください。</p>
+                        </div>
+                    </div>
+                    <div class="faq-item animate-on-scroll">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>本当に転職できますか？</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>転職を100%保証するものではありませんが、私たちの持つ10年以上の転職支援ノウハウとネットワークを最大限に活用し、あなたのキャリアアップ転職を全力でサポートすることをお約束します。多数の卒業生が希望のキャリアを実現されています。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="section cta section-bg-dark">
+            <div class="container text-center">
+                <h2 class="section-title animate-on-scroll">さあ、<span class="highlight">新しいキャリア</span>へ踏み出そう</h2>
+                <p class="cta-text animate-on-scroll">今の働き方にモヤモヤを感じているなら、それはあなたが成長できるチャンスのサインかもしれません。<br>まずは無料面談で、あなたの可能性を一緒に探しましょう。</p>
+                <a href="#" class="btn btn-large btn-highlight animate-on-scroll">今すぐ無料で面談予約する <span style="font-size: 0.8em; vertical-align: middle;">&rarr;</span></a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer section-bg-dark">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">ウズカレStep</div>
+                <nav class="footer-nav">
+                    <a href="#">運営会社：株式会社UZUZ</a>
+                    <a href="#">プライバシーポリシー</a>
+                    <a href="#">特定商取引法に基づく表記</a>
+                    <a href="#">お問い合わせ</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 UZUZ Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const questionButton = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+            const icon = item.querySelector('.faq-icon');
+
+            questionButton.addEventListener('click', () => {
+                // Close other active items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                        otherItem.querySelector('.faq-answer').style.maxHeight = '0';
+                        otherItem.querySelector('.faq-icon').textContent = '+';
+                    }
+                });
+
+                // Toggle current item
+                const isActive = item.classList.toggle('active');
+                questionButton.setAttribute('aria-expanded', isActive);
+                if (isActive) {
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                    icon.textContent = '-';
+                } else {
+                    answer.style.maxHeight = '0';
+                    icon.textContent = '+';
+                }
+            });
+        });
+        
+        // スクロールアニメーション (簡易版)
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, { threshold: 0.1 }); 
+
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // スムーズスクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#' || (href.startsWith('#') && href.length > 1 && document.getElementById(href.substring(1)))) {
+                     e.preventDefault();
+                     if (href !== '#') { 
+                        const targetElement = document.getElementById(href.substring(1));
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }
+                     } else {
+                         window.scrollTo({
+                             top: 0,
+                             behavior: 'smooth'
+                         });
+                     }
+                }
+            });
+        });
+
+        // Simple Network Particle Animation for Hero Canvas
+        const canvas = document.getElementById('networkCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const particleCount = 50; 
+
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas(); 
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1; 
+                    this.speedX = Math.random() * 1 - 0.5; 
+                    this.speedY = Math.random() * 1 - 0.5; 
+                    this.color = 'rgba(6, 182, 212, 0.5)'; 
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.size > 0.1) this.size -= 0.01;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            initParticles(); 
+
+            function handleParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].size <= 0.1) {
+                        particles[i] = new Particle();
+                    }
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 100) { 
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(6, 182, 212, 0.1)'; 
+                            ctx.lineWidth = 0.5; 
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            function animateNetwork() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                handleParticles(); 
+                requestAnimationFrame(animateNetwork); 
+            }
+            
+            if (canvas.offsetParent !== null) {
+                 animateNetwork();
+            }
+             window.addEventListener('resize', () => {
+                resizeCanvas(); 
+                initParticles(); 
+            });
+        }
+    </script>
+</body>
+</html>
